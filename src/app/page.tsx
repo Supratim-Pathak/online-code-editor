@@ -4,6 +4,10 @@
 import React, { Fragment, useEffect, useState } from "react";
 import Editor from "@monaco-editor/react";
 import { getRuntimes } from "@/lib/compilerServices";
+interface Runtime {
+  language: string;
+}
+
 export default function Home() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [output, setOutput] = useState<string>(
@@ -53,7 +57,7 @@ export default function Home() {
             className="w-[100px] bg-gray-800 flex flex-col items-center py-4 space-y-4 overflow-scroll"
             style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
           >
-            {runtimeList.map((data: any, index) => {
+            {runtimeList.map((data: Runtime, index) => {
               return (
                 <React.Fragment key={index}>
                   <button
