@@ -1,20 +1,41 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // import Image from "next/image";
 "use client";
-import { useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import Editor from "@monaco-editor/react";
+import { getRuntimes } from "@/lib/compilerServices";
 export default function Home() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [output, setOutput] = useState<string>(
     "Try programiz.pro\n=== Code Execution Successful ==="
   );
+  const [runtimeList, setRuntimeList] = useState([]);
+  const [lang, setLang] = useState<string | null>();
 
-  
+  useEffect(() => {
+    async function runtimeList() {
+      try {
+        const data = await getRuntimes();
+        console.log(data, "===========>");
+        setRuntimeList(data);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    runtimeList();
+  }, []);
+
   return (
     <>
       <div className="h-screen flex flex-col bg-gray-900 text-white">
         {/* Top Bar */}
         <div className="flex justify-between items-center p-4 border-b border-gray-700">
-          <span className="text-lg font-semibold">main.c</span>
+          <div>
+            <span className="text-lg font-semibold">
+              Start codeing in {lang ? lang.toUpperCase(): ""}
+            </span>
+          </div>
+          {/* <ComboBox></ComboBox> */}
           <div className="space-x-2">
             <button className="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded">
               Run
@@ -28,15 +49,30 @@ export default function Home() {
         {/* Main Layout */}
         <div className="flex flex-1 overflow-hidden">
           {/* Sidebar */}
-          <div className="w-16 bg-gray-800 flex flex-col items-center py-4 space-y-4">
-            <button className="flex flex-col items-center text-gray-400 hover:text-white">
-              {/* <SiCplusplus size={24} /> */}
-              <span className="text-l ">C++</span>
-            </button>
-            <button className="flex flex-col items-center text-gray-400 hover:text-white">
-              {/* <SiJavascript size={24} /> */}
-              <span className="text-l">JS</span>
-            </button>
+          <div
+            className="w-[100px] bg-gray-800 flex flex-col items-center py-4 space-y-4 overflow-scroll"
+            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+          >
+            {runtimeList.map((data: any, index) => {
+              return (
+                <React.Fragment key={index}>
+                  <button
+                    className={`flex text-xs w-full p-0 flex-col items-center  hover:text-white ${
+                      lang == data?.language
+                        ? "text-white-400 text-lg font-semibold"
+                        : "text-gray-400"
+                    }`}
+                    onClick={() => {
+                      setLang(data?.language);
+                    }}
+                  >
+                    <span className="text-l ">
+                      {data?.language.toUpperCase()}
+                    </span>
+                  </button>
+                </React.Fragment>
+              );
+            })}
           </div>
 
           {/* Code Editor */}
@@ -63,3 +99,4 @@ export default function Home() {
     </>
   );
 }
+// https://emkc.org/api/v2/runtimes/
