@@ -1,106 +1,98 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-// import Image from "next/image";
 "use client";
-import React, { Fragment, useEffect, useState } from "react";
+import { useState } from "react";
 import Editor from "@monaco-editor/react";
-import { getRuntimes } from "@/lib/compilerServices";
-interface Runtime {
-  language: string;
-}
 
-export default function Home() {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [output, setOutput] = useState<string>(
-    "Try programiz.pro\n=== Code Execution Successful ==="
-  );
-  const [runtimeList, setRuntimeList] = useState([]);
-  const [lang, setLang] = useState<string | null>();
+export default function CodeEditor() {
+  const [html, setHtml] = useState("<h1>Hello, World!</h1>");
+  const [css, setCss] = useState("h1 { color: red; }");
+  const [js, setJs] = useState("console.log('Hello from JS!');");
+  const [output, setOutput] = useState("");
 
-  useEffect(() => {
-    async function runtimeList() {
-      try {
-        const data = await getRuntimes();
-        console.log(data, "===========>");
-        setRuntimeList(data);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-    runtimeList();
-  }, []);
+  const runCode = () => {
+    const combinedCode = `
+      <html>
+      <head>
+        <style>${css}</style>
+      </head>
+      <body>
+        ${html}
+        <script>${js}<\/script>
+      </body>
+      </html>
+    `;
+    setOutput(combinedCode);
+  };
 
   return (
-    <>
-      <div className="h-screen flex flex-col bg-gray-900 text-white">
-        {/* Top Bar */}
-        <div className="flex justify-between items-center p-4 border-b border-gray-700">
-          <div>
-            <span className="text-lg font-semibold">
-              Start codeing in {lang ? lang.toUpperCase(): ""}
-            </span>
-          </div>
-          {/* <ComboBox></ComboBox> */}
-          <div className="space-x-2">
-            <button className="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded">
-              Run
-            </button>
-            <button className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded">
-              Clear
-            </button>
-          </div>
-        </div>
-
-        {/* Main Layout */}
-        <div className="flex flex-1 overflow-hidden">
-          {/* Sidebar */}
-          <div
-            className="w-[100px] bg-gray-800 flex flex-col items-center py-4 space-y-4 overflow-scroll"
-            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+    <div className="h-screen bg-[#0D1117] text-white flex flex-col">
+      {/* Header */}
+      <div className="bg-[#161B22] p-2 text-center text-lg font-semibold flex justify-between">
+        <div>Online Code Editor 🚀</div>
+        <div>
+          <button
+            className="bg-green-600 px-4 py-2 rounded-md text-white font-semibold hover:bg-green-700"
+            onClick={runCode}
           >
-            {runtimeList.map((data: Runtime, index) => {
-              return (
-                <React.Fragment key={index}>
-                  <button
-                    className={`flex text-xs w-full p-0 flex-col items-center  hover:text-white ${
-                      lang == data?.language
-                        ? "text-white-400 text-lg font-semibold"
-                        : "text-gray-400"
-                    }`}
-                    onClick={() => {
-                      setLang(data?.language);
-                    }}
-                  >
-                    <span className="text-l ">
-                      {data?.language.toUpperCase()}
-                    </span>
-                  </button>
-                </React.Fragment>
-              );
-            })}
-          </div>
-
-          {/* Code Editor */}
-          <div className="flex-1 p-4">
-            <div className="bg-gray-800 h-full p-4 rounded">
-              {/* <pre className="text-green-400">sjhsdgasdfjg</pre> */}
-              <Editor
-                theme="vs-dark"
-                className="editor"
-                height="90vh"
-                defaultLanguage="javascript"
-                defaultValue="// Start codeing"
-              />
-            </div>
-          </div>
-          {/* Output Panel */}
-          <div className="w-1/3 p-4 border-l border-gray-700">
-            <div className="bg-gray-800 h-full p-4 rounded">
-              <pre className="text-gray-300">{output}</pre>
-            </div>
-          </div>
+            Build 🛠️
+          </button>
         </div>
       </div>
-    </>
+      {/* Run Button */}
+
+      {/* Code Panels & Output */}
+      <div className="flex flex-1">
+        {/* Code Panels */}
+        <div className="w-2/5 flex flex-col space-y-2 p-2">
+          {/* HTML Editor */}
+          <div className="bg-[#161B22] rounded-lg p-2">
+            <h2 className="text-green-400 font-semibold">🔹 HTML</h2>
+            <Editor
+              height="250px"
+              defaultLanguage="html"
+              theme="vs-dark"
+              value={html}
+              onChange={(value) => setHtml(value || "")}
+              options={{ fontSize: 14 }}
+            />
+          </div>
+
+          {/* CSS Editor */}
+          <div className="bg-[#161B22] rounded-lg p-2">
+            <h2 className="text-blue-400 font-semibold">🔹 CSS</h2>
+            <Editor
+              height="250px"
+              defaultLanguage="css"
+              theme="vs-dark"
+              value={css}
+              onChange={(value) => setCss(value || "")}
+              options={{ fontSize: 14 }}
+            />
+          </div>
+
+          {/* JavaScript Editor */}
+          <div className="bg-[#161B22] rounded-lg p-2">
+            <h2 className="text-yellow-400 font-semibold">🔹 JavaScript</h2>
+            <Editor
+              height="250px"
+              defaultLanguage="javascript"
+              theme="vs-dark"
+              value={js}
+              onChange={(value) => setJs(value || "")}
+              options={{ fontSize: 14 }}
+            />
+          </div>
+        </div>
+
+        {/* Output Panel */}
+        <div className="w-3/5 bg-[#161B22] rounded-lg p-4">
+          {/* <h2 className="text-green-400 font-semibold">Output:</h2> */}
+          <iframe
+            title="output"
+            className="w-full h-full bg-white rounded-md"
+            srcDoc={output}
+          />
+        </div>
+      </div>
+    </div>
   );
 }
-// https://emkc.org/api/v2/runtimes/
